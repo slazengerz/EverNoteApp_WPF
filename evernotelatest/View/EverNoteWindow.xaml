@@ -1,0 +1,162 @@
+﻿<Window x:Class="EverNoteApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:b="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:vm="clr-namespace:EverNoteApp.ViewModel"
+        xmlns:uc="clr-namespace:EverNoteLatest.View.UserControls"
+        xmlns:conv="clr-namespace:EverNoteLatest.ViewModel.Converter"
+        mc:Ignorable="d"
+        Title="EverNote Clone" Height="400" Width="500"
+        Icon="EverNoteClone.ico">
+    <Window.Resources>
+        <vm:MainViewModel x:Key="vm"/>
+        <conv:BoolToVisible x:Key="boolToVis"/>
+    </Window.Resources>
+    <DockPanel x:Name="everNoteMainConatainer">
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="New NoteBook"
+                          Command="{Binding NoteBookCommand}"/>
+                <MenuItem Header="New Note"
+                          Command="{Binding NoteCommand }"
+                          CommandParameter="{Binding SelectedNoteBook,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                <MenuItem Header="Refresh"
+                          Command="{Binding RefreshCommand}"/>
+                <Separator/>
+                <MenuItem Header="Exit"
+                          Command="{Binding ExitCommand}"/>
+            </MenuItem>
+        </Menu>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock x:Name="statusBar"/>
+            </StatusBarItem>
+        </StatusBar>
+        <!--<ListView ItemsSource="{Binding NoteBookCollection}"
+                  SelectedItem="{Binding SelectedNoteBook,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <TextBlock Text="{Binding Name}"/>
+                        <TextBox x:Name="editNoteBookName"
+                                   Text="{Binding Name}"
+                                   Visibility="{Binding Source={StaticResource vm},Path=IsEditing,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Converter={StaticResource boolToVis}}"/>
+                        <b:Interaction.Triggers>
+                            <b:EventTrigger EventName="LostFocus">
+                                <b:InvokeCommandAction Command="{Binding Source={StaticResource vm},Path=HasEditedCommand}"
+                                                       CommandParameter="{Binding}"/>
+                            </b:EventTrigger>
+                        </b:Interaction.Triggers>
+                        <Grid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Rename"
+                                         Command="{Binding Source={StaticResource vm},Path=StartEditingCommand}"/>
+                            </ContextMenu>
+                        </Grid.ContextMenu>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>-->
+        <ListView ItemsSource="{Binding NoteBookCollection}"
+                      Width="200"
+                      Background="Gray"
+                      DockPanel.Dock="Left" 
+                      SelectedItem="{Binding SelectedNoteBook,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <uc:NoteBookUC NoteBookDP="{Binding}"/>
+                        <TextBox x:Name="editNoteBookName"
+                                 Text="{Binding Name}"
+                                 Visibility="{Binding Source={StaticResource vm},Path=IsEditing,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Converter={StaticResource boolToVis}}"/>
+                        <b:Interaction.Triggers>
+                            <b:EventTrigger EventName="LostFocus">
+                                <b:InvokeCommandAction Command="{Binding Source={StaticResource vm},Path=HasEditedCommand}"
+                                                       CommandParameter="{Binding}"/>
+                            </b:EventTrigger>
+                        </b:Interaction.Triggers>
+                        <Grid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Rename"
+                                         Command="{Binding Source={StaticResource vm},Path=StartEditingCommand}"/>
+                                <MenuItem Header="Delete"
+                                          Command="{Binding Source={StaticResource vm},Path=DeleteNoteBookCommand}"
+                                          CommandParameter="{Binding}"/>
+                                
+                            </ContextMenu>
+                        </Grid.ContextMenu>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <ListView Width="140"
+                      ItemsSource="{Binding NotesCollection}"
+                      DockPanel.Dock="Left"
+                      Background="LightGray"
+                      SelectedItem="{Binding SelectedNote}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                    <Grid>
+                        <uc:NoteControl NotesDP="{Binding}"/>
+                        <TextBox x:Name="editingNote"
+                                 Text="{Binding Title}"
+                                 Visibility="{Binding Source={StaticResource vm},Path=IsEditingNote,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Converter={StaticResource boolToVis}}"/>
+                        <b:Interaction.Triggers>
+                            <b:EventTrigger EventName="LostFocus">
+                                <b:InvokeCommandAction Command="{Binding Source={StaticResource vm},Path=HasEditedNoteCommand}"
+                                                       CommandParameter="{Binding}"/>
+                            </b:EventTrigger>
+                        </b:Interaction.Triggers>
+                        <Grid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Rename"
+                                          Command="{Binding Source={StaticResource vm},Path=StartEditingNoteCommand}"
+                                          CommandParameter="{Binding}"/>
+                                <MenuItem Header="Delete Note"
+                                          Command="{Binding Source={StaticResource vm},Path=DeleteNoteCommand}"
+                                          CommandParameter="{Binding}"/>
+                            </ContextMenu>
+                        </Grid.ContextMenu>
+                    </Grid>
+                </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        <ToolBarTray DockPanel.Dock="Top">
+            <ToolBar>  
+                <ToggleButton Content="Speech"
+                        x:Name="speechButton"
+                        Click="SpeechButton_Click"/>
+                <ToggleButton Content="B"
+                        x:Name="bold_Button"
+                        Click="Bold_Button_Click"
+                        FontWeight="Black"/>
+                <ToggleButton Content="I"
+                              x:Name="italic_Button"
+                              FontStyle="Italic"
+                              Click="Italic_Button_Click"/>
+                <ToggleButton x:Name="underline_Button"
+                              Click="Underline_Button_Click">
+                    <TextBlock Text="U"
+                               TextDecorations="Underline"/>
+                </ToggleButton>
+                <ComboBox x:Name="fontFamilyBox"
+                          Width="100"
+                          SelectionChanged="FontFamilyBox_SelectionChanged"/>
+                <ComboBox x:Name="fontSizeBox"
+                          Width="50"
+                          IsEditable="True"
+                          TextBoxBase.TextChanged="FontSizeBox_TextChanged"/>
+                <Button x:Name="saveNotes"
+                        Content="Save"
+                        Click="SaveNotes_Click"/>
+            </ToolBar>
+        </ToolBarTray>
+        <Grid>
+            <RichTextBox x:Name="richTextBoxContent"
+                         TextChanged="RichTextBoxContent_TextChanged"
+                         SelectionChanged="RichTextBoxContent_SelectionChanged"/>
+        </Grid>
+    </DockPanel>
+</Window>
